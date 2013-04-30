@@ -29,7 +29,7 @@ namespace swephcs
 			Console.WriteLine("Date/Time (yyyy-MM-dd HH:mm): {0:D4}-{1:D2}-{2:D2} {3:D2}:{4:D2} UT",
 								year, month, day, (int)hour, (int)min);
 
-			// Calculate Julian day number (for furder calculation)
+			// Calculate Julian day number (for further computation)
 			double julianDate = NativeMethods.swe_julday(year, month, day, hourFull, 1);
 			double deltat = NativeMethods.swe_deltat(julianDate);
 
@@ -69,14 +69,8 @@ namespace swephcs
 			Console.WriteLine();
 			decimal raDegree = (decimal)positionArray[0];
 
-			// Calculate degrees with minutes an seconds
-			decimal degMain = Math.Floor(raDegree);
-			decimal degSub = ((raDegree - degMain) * 6.0M * 100.0M) / 10.0M;
-			decimal degMin = Math.Floor(degSub);
-			decimal degSec = ((degSub - degMin) * 6.0M * 100.0M) / 10.0M;
-
 			// Output Sun result
-			Console.WriteLine("Sun R.A. degrees = {0:f0}° {1:f0}'{2:f4}", degMain, degMin, degSec);
+			Console.WriteLine("Sun R.A. degrees = {0}", MakeDegreesString(raDegree));
 			Console.WriteLine("Sun R.A. decimal = {0:f10}", raDegree);
 
 			// == 03. Close files if any used ================================
@@ -85,37 +79,53 @@ namespace swephcs
 			Console.ReadKey();
 		}
 
+		/// <summary>
+		/// Calculate degrees with minutes an seconds
+		/// </summary>
+		/// <param name="degrees">Decimal representation of degrees</param>
+		/// <returns></returns>
+		static string MakeDegreesString(decimal degrees)
+		{
+			decimal degMain = Math.Floor(degrees);
+			decimal degSub = ((degrees - degMain) * 6.0M * 100.0M) / 10.0M;
+			decimal degMin = Math.Floor(degSub);
+			decimal degSec = ((degSub - degMin) * 6.0M * 100.0M) / 10.0M;
+
+			return String.Format("{0:f0}° {1:f0}'{2:f4}", degMain, degMin, degSec);
+		}
+
 		static void ReadDateTime()
 		{
 			DateTime today = DateTime.Today;
+			String formatStr = "{0,-14}: ";
+			
 			// Date part
-			Console.Write("Enter year: ");
+			Console.Write(formatStr, "Enter year");
 			bool result = int.TryParse(Console.ReadLine(), out year);
 			if (!result)
 			{
-				//year = 1800;	// Firs year of *_18.se1 files
 				year = today.Year;
 			}
 
-			Console.Write("Enter month: ");
+			Console.Write(formatStr, "Enter month");
 			result = int.TryParse(Console.ReadLine(), out month);
 			if (!result)
 			{
 				month = today.Month;
 			}
 
-			Console.Write("Enter day: ");
+			Console.Write(formatStr, "Enter day");
 			result = int.TryParse(Console.ReadLine(), out day);
 			if (!result)
 			{
 				day = today.Day;
 			}
 
-			// Time parts
-			Console.Write("Enter hour: ");
+			// Time part
+			Console.Write(formatStr, "Enter hour");
 			result = int.TryParse(Console.ReadLine(), out hour);
 
-			Console.Write("Enter minutes: ");
+			Console.Write(formatStr, "Enter minutes");
 			result = int.TryParse(Console.ReadLine(), out min);
 		}
 	}
